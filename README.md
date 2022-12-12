@@ -4,7 +4,7 @@ Rust project to allow easy usage of Speech Recognition libraries with a common A
 
 ## Supported backends:
 
-- `marek_google_speech_recognition` - Google Chrome's `libsoda` wrapper. Fast, offline and accurate, but unfortunately `libsoda` is secured with an API key and stack verification.
+- `marek_google_speech_recognition` - Google Chrome's `libsoda` wrapper. Fast, offline and accurate, but unfortunately `libsoda` is secured with an API key and stack verification. Tested on Linux and Windows (mingw).
 
 ## Examples
 
