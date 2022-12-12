@@ -1,0 +1,17 @@
+[package]
+name = "marek_google_speech_recognition"
+version = "1.0.0"
+authors = ["Marek Gibek <marek-dev@yandex.com>"]
+description = "Idiomatic bindings for Google Chrome's libsoda"
+keywords = ["speech", "recognition", "soda"]
+categories = ["accessibility", "multimedia::audio", "api-bindings"]
+repository = "https://github.com/marek-g/marek_speech_recognition"
+documentation = "https://docs.rs/marek_google_speech_recognition"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+
+[dependencies]
+marek_speech_recognition_api = { version = "1.0", path = "../marek_speech_recognition_api" }
+libsoda_sys = { version = "1.0", path = "../libsoda_sys" }
+futures = "0.3"
+prost = "0.11"

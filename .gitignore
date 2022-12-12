@@ -1,0 +1,5 @@
+/target/
+/rls/
+**/*.rs.bk
+libsoda.so
+SODALanguagePacks

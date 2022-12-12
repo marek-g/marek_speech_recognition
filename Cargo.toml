@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "libsoda_sys",
+    "marek_google_speech_recognition",
+    "marek_speech_recognition_api",
+    "speech_recognition_test",
+]

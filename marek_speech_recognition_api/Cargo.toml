@@ -1,0 +1,16 @@
+[package]
+name = "marek_speech_recognition_api"
+version = "1.0.0"
+authors = ["Marek Gibek <marek-dev@yandex.com>"]
+description = "Speech recognition API"
+keywords = ["speech", "recognition", "api"]
+categories = ["accessibility", "multimedia::audio"]
+repository = "https://github.com/marek-g/marek_speech_recognition"
+documentation = "https://docs.rs/marek_speech_recognition_api"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = "0.3"
