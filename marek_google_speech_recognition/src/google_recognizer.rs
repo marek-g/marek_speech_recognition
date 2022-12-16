@@ -20,6 +20,8 @@ pub struct GoogleRecognizer {
     handle: SodaHandle,
 }
 
+unsafe impl Send for GoogleRecognizer {}
+
 #[no_mangle]
 pub extern "C" fn callback(
     response: *const c_char,

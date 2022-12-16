@@ -1,6 +1,6 @@
 [package]
 name = "marek_google_speech_recognition"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Marek Gibek <marek-dev@yandex.com>"]
 description = "Idiomatic bindings for Google Chrome's libsoda"
 keywords = ["speech", "recognition", "soda"]
