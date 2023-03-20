@@ -65,7 +65,11 @@ pub extern "C" fn callback(
                     "".to_string()
                 },
                 is_final: recognition_event.result_type() == ResultType::Final,
+
+                audio_start_time_usec: None,
                 audio_end_time_usec: audio_time_usec,
+
+                words: None,
             })
         } else if let Some(langid_event) = result.langid_event {
             langid_event
