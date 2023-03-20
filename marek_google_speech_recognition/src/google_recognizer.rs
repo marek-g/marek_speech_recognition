@@ -104,8 +104,10 @@ impl GoogleRecognizer {
                 api_key: Some("dummy_api_key".to_string()),
                 language_pack_directory: Some(folder),
                 recognition_mode: Some(match recognizer_options.mode {
-                    marek_speech_recognition_api::RecognitionMode::Ime => RecognitionMode::Ime,
-                    marek_speech_recognition_api::RecognitionMode::Caption => {
+                    marek_speech_recognition_api::RecognitionMode::Commands(_) => {
+                        RecognitionMode::Ime
+                    }
+                    marek_speech_recognition_api::RecognitionMode::Speech => {
                         RecognitionMode::Caption
                     }
                     _ => RecognitionMode::Ime,

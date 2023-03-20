@@ -14,7 +14,7 @@ impl Default for RecognizerOptions {
             language: "en-US".to_string(),
             channel_count: 1,
             sample_rate: 16000,
-            mode: RecognitionMode::Ime,
+            mode: RecognitionMode::Speech,
         }
     }
 }
