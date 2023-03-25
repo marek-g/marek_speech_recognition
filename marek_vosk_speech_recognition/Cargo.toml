@@ -1,0 +1,18 @@
+[package]
+name = "marek_vosk_speech_recognition"
+version = "1.0.1"
+authors = ["Marek Gibek <marek-dev@yandex.com>"]
+description = "Marek's bindings for Vosk Speech Recognition"
+keywords = ["speech", "recognition", "vosk"]
+categories = ["accessibility", "multimedia::audio", "api-bindings"]
+repository = "https://github.com/marek-g/marek_speech_recognition"
+documentation = "https://docs.rs/marek_vosk_speech_recognition"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+marek_speech_recognition_api = { version = "1.0", path = "../marek_speech_recognition_api" }
+vosk = "0.2"
+futures = "0.3"

@@ -1,5 +1,5 @@
-#[derive(Debug)]
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub enum RecognitionEvent {
     /// Started listening.
     Start,
@@ -31,7 +31,7 @@ pub enum RecognitionEvent {
 }
 
 /// A single word and metadata about it.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Word {
     /// Confidence that this word is.
     pub conf: f32,

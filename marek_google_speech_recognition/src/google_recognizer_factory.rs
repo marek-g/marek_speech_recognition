@@ -2,7 +2,7 @@ use crate::GoogleRecognizer;
 use futures::channel::mpsc::UnboundedReceiver;
 use libsoda_sys::LibSoda;
 use marek_speech_recognition_api::{
-    RecognitionEvent, RecognizerFactory, RecognizerOptions, SpeechError, SpeechResult,
+    RecognitionEvent, Recognizer, RecognizerFactory, RecognizerOptions, SpeechError, SpeechResult,
 };
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -13,9 +13,9 @@ pub struct GoogleRecognizerFactory {
 }
 
 impl GoogleRecognizerFactory {
-    pub fn new<T: Into<PathBuf>>(
-        library_folder: T,
-        language_packs_folder: T,
+    pub fn new<T1: Into<PathBuf>, T2: Into<PathBuf>>(
+        library_folder: T1,
+        language_packs_folder: T2,
     ) -> SpeechResult<Self> {
         let lib_soda = LibSoda::load(library_folder)
             .map_err(|err| SpeechError::LoadLibraryError(format!("{:?}", err)))?;
@@ -26,15 +26,17 @@ impl GoogleRecognizerFactory {
     }
 }
 
-impl RecognizerFactory<GoogleRecognizer> for GoogleRecognizerFactory {
+impl RecognizerFactory for GoogleRecognizerFactory {
     fn create_recognizer(
         &mut self,
         recognizer_options: RecognizerOptions,
-    ) -> SpeechResult<(GoogleRecognizer, UnboundedReceiver<RecognitionEvent>)> {
-        GoogleRecognizer::new(
+    ) -> SpeechResult<(Box<dyn Recognizer>, UnboundedReceiver<RecognitionEvent>)> {
+        let (recognizer, receiver) = GoogleRecognizer::new(
             self.lib_soda.clone(),
             &self.language_packs_folder,
             recognizer_options,
-        )
+        )?;
+
+        Ok((Box::new(recognizer), receiver))
     }
 }

@@ -1,9 +1,9 @@
 use crate::{RecognitionEvent, Recognizer, RecognizerOptions, SpeechResult};
 use futures::channel::mpsc::UnboundedReceiver;
 
-pub trait RecognizerFactory<T: Recognizer> {
+pub trait RecognizerFactory {
     fn create_recognizer(
         &mut self,
         options: RecognizerOptions,
-    ) -> SpeechResult<(T, UnboundedReceiver<RecognitionEvent>)>;
+    ) -> SpeechResult<(Box<dyn Recognizer>, UnboundedReceiver<RecognitionEvent>)>;
 }

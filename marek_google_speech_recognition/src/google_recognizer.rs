@@ -185,7 +185,7 @@ impl Recognizer for GoogleRecognizer {
         Ok(())
     }
 
-    fn write(&mut self, buffer: &[u8]) -> SpeechResult {
+    fn write(&mut self, buffer: &[i16]) -> SpeechResult {
         unsafe {
             (self.lib_soda.add_audio)(
                 self.handle,

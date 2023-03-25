@@ -2,10 +2,11 @@ use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::path::PathBuf;
 
-#[derive(Debug)]
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub enum SpeechError {
     LoadLibraryError(String),
+    NoLanguageFound(String),
     LanguageFolderError(PathBuf),
     Unknown,
 }

@@ -1,8 +1,12 @@
 [workspace]
 
 members = [
-    "libsoda_sys",
-    "marek_google_speech_recognition",
     "marek_speech_recognition_api",
+
+    "marek_google_speech_recognition",
+    "libsoda_sys",
+    
+    "marek_vosk_speech_recognition",
+
     "speech_recognition_test",
 ]

@@ -7,6 +7,7 @@ mod recognizer_options;
 
 pub use error::{SpeechError, SpeechResult};
 pub use recognition_event::RecognitionEvent;
+pub use recognition_event::Word;
 pub use recognition_mode::RecognitionMode;
 pub use recognizer::Recognizer;
 pub use recognizer_factory::RecognizerFactory;

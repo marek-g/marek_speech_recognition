@@ -1,6 +1,7 @@
 use crate::recognition_mode::RecognitionMode;
 
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RecognizerOptions {
     pub language: String,
     pub channel_count: i32,
