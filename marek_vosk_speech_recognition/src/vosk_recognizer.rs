@@ -5,10 +5,11 @@ use std::{
 
 use futures::channel::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use marek_speech_recognition_api::{
-    RecognitionEvent, RecognitionMode, Recognizer, SpeechError, SpeechResult, Word,
+    RecognitionEvent, RecognitionMode, Recognizer, RecognizerInfo, SpeechError, SpeechResult, Word,
 };
 
 pub struct VoskRecognizer {
+    info: RecognizerInfo,
     model: vosk::Model,
     sample_rate: i32,
     recognition_mode: RecognitionMode,
@@ -34,6 +35,10 @@ impl VoskRecognizer {
 
         Ok((
             VoskRecognizer {
+                info: RecognizerInfo {
+                    name: "Vosk".to_string(),
+                    is_realtime_only: false,
+                },
                 model,
                 sample_rate,
                 recognition_mode,
@@ -52,6 +57,10 @@ enum VoskRecognizerEvent {
 }
 
 impl Recognizer for VoskRecognizer {
+    fn info(&self) -> &RecognizerInfo {
+        &self.info
+    }
+
     fn start(&mut self) -> SpeechResult {
         let mut recognizer = match &self.recognition_mode {
             RecognitionMode::Speech => vosk::Recognizer::new(&self.model, self.sample_rate as f32)

@@ -2,7 +2,7 @@ use byteorder::{ByteOrder, LittleEndian};
 use futures_util::stream::StreamExt;
 use marek_google_speech_recognition::GoogleRecognizerFactory;
 use marek_speech_recognition_api::{
-    RecognitionEvent, Recognizer, RecognizerFactory, RecognizerOptions, SpeechResult,
+    RecognitionEvent, RecognizerFactory, RecognizerOptions, SpeechResult,
 };
 use marek_vosk_speech_recognition::{VoskModelInfo, VoskRecognizerFactory};
 use std::error::Error;
@@ -25,14 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     tokio::spawn(event_receiver.for_each(|ev| {
         //println!("Event: {:?}", ev);
-        if let RecognitionEvent::Recognition {
-            text,
-            is_final,
-            audio_start_time_usec,
-            audio_end_time_usec,
-            words,
-        } = ev
-        {
+        if let RecognitionEvent::Recognition { text, is_final, .. } = ev {
             println!("{}: {}", if is_final { "Final" } else { "Partial" }, text);
         } else {
             println!("Event: {:?}", ev);
@@ -43,9 +36,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let step_size = 1024;
     for pos in (0..audio_raw_data.len()).step_by(step_size) {
-        sleep(Duration::from_millis(
-            ((step_size as u64 * 1000u64) / 16000u64) as u64,
-        ));
+        if recognizer.info().is_realtime_only {
+            sleep(Duration::from_millis(
+                ((step_size as u64 * 1000u64) / 16000u64) as u64,
+            ));
+        }
         recognizer.write(&audio_raw_data[pos..(pos + step_size).min(audio_raw_data.len())])?;
     }
 
@@ -68,8 +63,6 @@ fn create_recognizer_factory() -> SpeechResult<Box<dyn RecognizerFactory>> {
             .or(answer.strip_suffix("\n"))
             .unwrap_or(&answer)
             .to_string();
-
-        println!("You chosen: {}", answer);
 
         if answer == "google" {
             return Ok(Box::new(GoogleRecognizerFactory::new(

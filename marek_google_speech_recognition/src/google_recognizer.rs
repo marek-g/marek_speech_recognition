@@ -6,7 +6,7 @@ use libsoda_sys::soda_recognition_result::ResultType;
 use libsoda_sys::soda_response::SodaMessageType;
 use libsoda_sys::{ExtendedSodaConfigMsg, LibSoda, SodaConfig, SodaHandle, SodaResponse};
 use marek_speech_recognition_api::{
-    RecognitionEvent, Recognizer, RecognizerOptions, SpeechError, SpeechResult,
+    RecognitionEvent, Recognizer, RecognizerInfo, RecognizerOptions, SpeechError, SpeechResult,
 };
 use prost::Message;
 use std::ffi::{c_char, c_int, c_void};
@@ -15,6 +15,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 pub struct GoogleRecognizer {
+    info: RecognizerInfo,
     lib_soda: Arc<LibSoda>,
     sender: *mut UnboundedSender<RecognitionEvent>,
     handle: SodaHandle,
@@ -132,6 +133,10 @@ impl GoogleRecognizer {
 
             Ok((
                 Self {
+                    info: RecognizerInfo {
+                        name: "Google libsoda".to_string(),
+                        is_realtime_only: true,
+                    },
                     lib_soda,
                     sender,
                     handle,
@@ -177,6 +182,10 @@ impl Drop for GoogleRecognizer {
 }
 
 impl Recognizer for GoogleRecognizer {
+    fn info(&self) -> &RecognizerInfo {
+        &self.info
+    }
+
     fn start(&mut self) -> SpeechResult<()> {
         unsafe {
             (self.lib_soda.soda_start)(self.handle);
