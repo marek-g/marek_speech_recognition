@@ -38,6 +38,7 @@ impl VoskRecognizer {
                 info: RecognizerInfo {
                     name: "Vosk".to_string(),
                     is_realtime_only: false,
+                    has_punctuation: false,
                 },
                 model,
                 sample_rate,

@@ -136,6 +136,7 @@ impl GoogleRecognizer {
                     info: RecognizerInfo {
                         name: "Google libsoda".to_string(),
                         is_realtime_only: true,
+                        has_punctuation: true,
                     },
                     lib_soda,
                     sender,
