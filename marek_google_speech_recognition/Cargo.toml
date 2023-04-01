@@ -13,5 +13,7 @@ license = "AGPL-3.0-or-later"
 [dependencies]
 marek_speech_recognition_api = { version = "1.0", path = "../marek_speech_recognition_api" }
 libsoda_sys = { version = "1.0", path = "../libsoda_sys" }
+tokio = { version = "1", features = ["full"] }
 futures = "0.3"
+async-trait = "0.1"
 prost = "0.11"

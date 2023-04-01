@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use futures::channel::mpsc;
 use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender};
 use libsoda_sys::extended_soda_config_msg::RecognitionMode;
@@ -13,8 +14,11 @@ use std::ffi::{c_char, c_int, c_void};
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::time::sleep;
 
 pub struct GoogleRecognizer {
+    recognizer_options: RecognizerOptions,
     info: RecognizerInfo,
     lib_soda: Arc<LibSoda>,
     sender: *mut UnboundedSender<RecognitionEvent>,
@@ -133,6 +137,7 @@ impl GoogleRecognizer {
 
             Ok((
                 Self {
+                    recognizer_options,
                     info: RecognizerInfo {
                         name: "Google libsoda".to_string(),
                         is_realtime_only: true,
@@ -182,12 +187,13 @@ impl Drop for GoogleRecognizer {
     }
 }
 
+#[async_trait]
 impl Recognizer for GoogleRecognizer {
     fn info(&self) -> &RecognizerInfo {
         &self.info
     }
 
-    fn start(&mut self) -> SpeechResult<()> {
+    async fn start(&mut self) -> SpeechResult<()> {
         unsafe {
             (self.lib_soda.soda_start)(self.handle);
         }
@@ -195,7 +201,7 @@ impl Recognizer for GoogleRecognizer {
         Ok(())
     }
 
-    fn write(&mut self, buffer: &[i16]) -> SpeechResult {
+    async fn write(&mut self, buffer: &[i16]) -> SpeechResult {
         unsafe {
             (self.lib_soda.add_audio)(
                 self.handle,
@@ -204,10 +210,18 @@ impl Recognizer for GoogleRecognizer {
             );
         }
 
+        // google recognizer works in real time only
+        // simulate the delay between buffers
+        let mut millis = (buffer.len() as u64 * 1000u64)
+            / ((self.recognizer_options.sample_rate * self.recognizer_options.channel_count)
+                as u64);
+        millis = (millis * 900) / 1000; // wait a little less than realitme
+        sleep(Duration::from_millis(millis)).await;
+
         Ok(())
     }
 
-    fn stop(&mut self) -> SpeechResult {
+    async fn stop(&mut self) -> SpeechResult {
         unsafe {
             (self.lib_soda.soda_stop)(self.handle);
         }

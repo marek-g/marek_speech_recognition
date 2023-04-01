@@ -8,8 +8,6 @@ use marek_vosk_speech_recognition::{VoskModelInfo, VoskRecognizerFactory};
 use std::error::Error;
 use std::io::Write;
 use std::path::PathBuf;
-use std::thread::sleep;
-use std::time::Duration;
 use std::{env, future};
 use tokio::fs;
 
@@ -21,7 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let (mut recognizer, event_receiver) =
         recognizer_factory.create_recognizer(RecognizerOptions::default())?;
 
-    recognizer.start()?;
+    recognizer.start().await?;
 
     tokio::spawn(event_receiver.for_each(|ev| {
         //println!("Event: {:?}", ev);
@@ -36,17 +34,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let step_size = 1024;
     for pos in (0..audio_raw_data.len()).step_by(step_size) {
-        if recognizer.info().is_realtime_only {
-            sleep(Duration::from_millis(
-                ((step_size as u64 * 1000u64) / 16000u64) as u64,
-            ));
-        }
-        recognizer.write(&audio_raw_data[pos..(pos + step_size).min(audio_raw_data.len())])?;
+        recognizer
+            .write(&audio_raw_data[pos..(pos + step_size).min(audio_raw_data.len())])
+            .await?;
     }
 
-    recognizer.stop()?;
-
-    sleep(Duration::from_millis(2000));
+    recognizer.stop().await?;
 
     Ok(())
 }

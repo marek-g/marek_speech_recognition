@@ -3,7 +3,11 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use futures::channel::mpsc::{self, UnboundedReceiver, UnboundedSender};
+use async_trait::async_trait;
+use futures::channel::{
+    mpsc::{self, UnboundedReceiver, UnboundedSender},
+    oneshot,
+};
 use marek_speech_recognition_api::{
     RecognitionEvent, RecognitionMode, Recognizer, RecognizerInfo, SpeechError, SpeechResult, Word,
 };
@@ -53,16 +57,17 @@ impl VoskRecognizer {
 }
 
 enum VoskRecognizerEvent {
-    Write(Vec<i16>),
+    Write(Vec<i16>, oneshot::Sender<()>),
     Stop,
 }
 
+#[async_trait]
 impl Recognizer for VoskRecognizer {
     fn info(&self) -> &RecognizerInfo {
         &self.info
     }
 
-    fn start(&mut self) -> SpeechResult {
+    async fn start(&mut self) -> SpeechResult {
         let mut recognizer = match &self.recognition_mode {
             RecognitionMode::Speech => vosk::Recognizer::new(&self.model, self.sample_rate as f32)
                 .ok_or_else(|| {
@@ -99,20 +104,22 @@ impl Recognizer for VoskRecognizer {
             loop {
                 let event = receiver.recv().unwrap();
                 match event {
-                    VoskRecognizerEvent::Write(buffer) => match recognizer.accept_waveform(&buffer)
-                    {
-                        vosk::DecodingState::Running => partial_result(
-                            &mut recognizer,
-                            &mut last_recognition_event,
-                            &result_sender,
-                        ),
-                        vosk::DecodingState::Finalized => finalized_result(
-                            &mut recognizer,
-                            &mut last_recognition_event,
-                            &result_sender,
-                        ),
-                        vosk::DecodingState::Failed => panic!("VoskRecognizer error!"),
-                    },
+                    VoskRecognizerEvent::Write(buffer, sender) => {
+                        match recognizer.accept_waveform(&buffer) {
+                            vosk::DecodingState::Running => partial_result(
+                                &mut recognizer,
+                                &mut last_recognition_event,
+                                &result_sender,
+                            ),
+                            vosk::DecodingState::Finalized => finalized_result(
+                                &mut recognizer,
+                                &mut last_recognition_event,
+                                &result_sender,
+                            ),
+                            vosk::DecodingState::Failed => panic!("VoskRecognizer error!"),
+                        }
+                        sender.send(()).unwrap();
+                    }
                     VoskRecognizerEvent::Stop => break,
                 }
             }
@@ -127,16 +134,24 @@ impl Recognizer for VoskRecognizer {
         Ok(())
     }
 
-    fn write(&mut self, buffer: &[i16]) -> SpeechResult {
-        if let Some(sender) = &self.vosk_thread_sender {
-            sender
-                .send(VoskRecognizerEvent::Write(Vec::from(buffer)))
-                .unwrap();
+    async fn write(&mut self, buffer: &[i16]) -> SpeechResult {
+        let finish_receiver = if let Some(vosk_thread_sender) = &self.vosk_thread_sender {
+            let (finish_sender, finish_receiver) = oneshot::channel::<()>();
+            let message = VoskRecognizerEvent::Write(Vec::from(buffer), finish_sender);
+            vosk_thread_sender.send(message).unwrap();
+            Some(finish_receiver)
+        } else {
+            None
+        };
+
+        if let Some(finish_receiver) = finish_receiver {
+            finish_receiver.await.unwrap();
         }
+
         Ok(())
     }
 
-    fn stop(&mut self) -> SpeechResult {
+    async fn stop(&mut self) -> SpeechResult {
         if let Some(sender) = &self.vosk_thread_sender {
             sender.send(VoskRecognizerEvent::Stop).unwrap();
         }

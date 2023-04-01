@@ -16,3 +16,5 @@ license = "AGPL-3.0-or-later"
 marek_speech_recognition_api = { version = "1.0", path = "../marek_speech_recognition_api" }
 vosk = "0.2"
 futures = "0.3"
+async-trait = "0.1"
+
