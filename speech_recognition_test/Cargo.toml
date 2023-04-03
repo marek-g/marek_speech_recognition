@@ -1,6 +1,6 @@
 [package]
 name = "speech_recognition_test"
-version = "1.0.0"
+version = "2.0.0"
 authors = ["Marek Gibek <marek-dev@yandex.com>"]
 description = "Speech recognition test application"
 keywords = ["speech", "recognition", "api"]
@@ -11,9 +11,9 @@ edition = "2021"
 license = "AGPL-3.0-or-later"
 
 [dependencies]
-marek_speech_recognition_api = { version = "1.0", path="../marek_speech_recognition_api" }
-marek_google_speech_recognition = { version = "1.0", path="../marek_google_speech_recognition" }
-marek_vosk_speech_recognition = { version = "1.0", path="../marek_vosk_speech_recognition" }
+marek_speech_recognition_api = { version = "2.0", path="../marek_speech_recognition_api" }
+marek_google_speech_recognition = { version = "2.0", path="../marek_google_speech_recognition" }
+marek_vosk_speech_recognition = { version = "2.0", path="../marek_vosk_speech_recognition" }
 tokio = { version = "1", features = ["full"] }
 futures-util = "0.3"
-byteorder = "1.4"
+byteorder = "1"
