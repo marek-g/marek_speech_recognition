@@ -30,7 +30,10 @@ impl RecognizerFactory for GoogleRecognizerFactory {
     fn create_recognizer(
         &mut self,
         recognizer_options: RecognizerOptions,
-    ) -> SpeechResult<(Box<dyn Recognizer>, UnboundedReceiver<RecognitionEvent>)> {
+    ) -> SpeechResult<(
+        Box<dyn Recognizer + Send>,
+        UnboundedReceiver<RecognitionEvent>,
+    )> {
         let (recognizer, receiver) = GoogleRecognizer::new(
             self.lib_soda.clone(),
             &self.language_packs_folder,

@@ -25,7 +25,7 @@ impl RecognizerFactory for VoskRecognizerFactory {
         &mut self,
         options: marek_speech_recognition_api::RecognizerOptions,
     ) -> marek_speech_recognition_api::SpeechResult<(
-        Box<dyn Recognizer>,
+        Box<dyn Recognizer + Send>,
         UnboundedReceiver<marek_speech_recognition_api::RecognitionEvent>,
     )> {
         let model_path = self
