@@ -104,7 +104,7 @@ impl GoogleRecognizer {
 
         unsafe {
             let config = ExtendedSodaConfigMsg {
-                channel_count: Some(recognizer_options.channel_count),
+                channel_count: Some(1),
                 sample_rate: Some(recognizer_options.sample_rate),
                 api_key: Some("dummy_api_key".to_string()),
                 language_pack_directory: Some(folder),
@@ -212,9 +212,8 @@ impl Recognizer for GoogleRecognizer {
 
         // google recognizer works in real time only
         // simulate the delay between buffers
-        let mut millis = (buffer.len() as u64 * 1000u64)
-            / ((self.recognizer_options.sample_rate * self.recognizer_options.channel_count)
-                as u64);
+        let mut millis =
+            (buffer.len() as u64 * 1000u64) / (self.recognizer_options.sample_rate as u64);
         millis = (millis * 900) / 1000; // wait a little less than realitme
         sleep(Duration::from_millis(millis)).await;
 
