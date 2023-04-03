@@ -53,7 +53,7 @@ fn create_recognizer_factory() -> SpeechResult<Box<dyn RecognizerFactory>> {
         std::io::stdin().read_line(&mut answer).unwrap();
         answer = answer
             .strip_suffix("\r\n")
-            .or(answer.strip_suffix("\n"))
+            .or(answer.strip_suffix('\n'))
             .unwrap_or(&answer)
             .to_string();
 

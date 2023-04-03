@@ -195,7 +195,7 @@ fn send_recognition_event(
     words: Vec<vosk::Word>,
     is_final: bool,
 ) {
-    if words.len() > 0 && text.len() > 0 {
+    if !words.is_empty() && !text.is_empty() {
         let recognition_event = Some(to_recognition_event(text, words, is_final));
 
         if recognition_event != *last_recognition_event {

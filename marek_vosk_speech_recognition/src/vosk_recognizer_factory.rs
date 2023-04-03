@@ -34,7 +34,7 @@ impl RecognizerFactory for VoskRecognizerFactory {
             .filter(|el| el.language == options.language)
             .map(|el| el.folder.clone())
             .next()
-            .ok_or_else(|| SpeechError::NoLanguageFound(options.language))?;
+            .ok_or(SpeechError::NoLanguageFound(options.language))?;
 
         let (recognizer, receiver) =
             VoskRecognizer::new(&model_path, options.sample_rate, options.mode)?;
