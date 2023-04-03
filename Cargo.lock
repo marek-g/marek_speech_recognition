@@ -317,7 +317,7 @@ dependencies = [
 
 [[package]]
 name = "marek_google_speech_recognition"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -329,7 +329,7 @@ dependencies = [
 
 [[package]]
 name = "marek_speech_recognition_api"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -337,7 +337,7 @@ dependencies = [
 
 [[package]]
 name = "marek_vosk_speech_recognition"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "async-trait",
  "futures",
@@ -638,7 +638,7 @@ dependencies = [
 
 [[package]]
 name = "speech_recognition_test"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "byteorder",
  "futures-util",

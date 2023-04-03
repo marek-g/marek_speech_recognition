@@ -1,6 +1,6 @@
 [package]
 name = "marek_google_speech_recognition"
-version = "2.0.0"
+version = "2.1.0"
 authors = ["Marek Gibek <marek-dev@yandex.com>"]
 description = "Idiomatic bindings for Google Chrome's libsoda"
 keywords = ["speech", "recognition", "soda"]
@@ -11,7 +11,7 @@ edition = "2021"
 license = "AGPL-3.0-or-later"
 
 [dependencies]
-marek_speech_recognition_api = { version = "2.0", path = "../marek_speech_recognition_api" }
+marek_speech_recognition_api = { version = "2.1", path = "../marek_speech_recognition_api" }
 libsoda_sys = { version = "1.0", path = "../libsoda_sys" }
 tokio = { version = "1", features = ["full"] }
 futures = "0.3"
