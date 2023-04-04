@@ -14,7 +14,7 @@ use std::ffi::{c_char, c_int, c_void};
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tokio::time::sleep;
 
 pub struct GoogleRecognizer {
@@ -23,6 +23,8 @@ pub struct GoogleRecognizer {
     lib_soda: Arc<LibSoda>,
     sender: *mut UnboundedSender<RecognitionEvent>,
     handle: SodaHandle,
+    start_time: Instant,
+    samples_written: usize,
 }
 
 unsafe impl Send for GoogleRecognizer {}
@@ -146,6 +148,8 @@ impl GoogleRecognizer {
                     lib_soda,
                     sender,
                     handle,
+                    start_time: Instant::now(),
+                    samples_written: 0,
                 },
                 receiver,
             ))
@@ -194,6 +198,8 @@ impl Recognizer for GoogleRecognizer {
     }
 
     async fn start(&mut self) -> SpeechResult<()> {
+        self.samples_written = 0;
+
         unsafe {
             (self.lib_soda.soda_start)(self.handle);
         }
@@ -202,20 +208,28 @@ impl Recognizer for GoogleRecognizer {
     }
 
     async fn write(&mut self, buffer: &[i16]) -> SpeechResult {
+        // google recognizer works in real time only
+        // simulate the delay between buffers
+        if self.samples_written == 0 {
+            self.start_time = Instant::now();
+        } else {
+            let elapsed_ms = self.start_time.elapsed().as_millis() as u64;
+            let dest_time_ms = (self.samples_written as u64 * 1000u64)
+                / (self.recognizer_options.sample_rate as u64);
+            if dest_time_ms > elapsed_ms + 2 {
+                sleep(Duration::from_millis(dest_time_ms - elapsed_ms)).await;
+            }
+        }
+
         unsafe {
             (self.lib_soda.add_audio)(
                 self.handle,
                 buffer.as_ptr() as *const c_char,
-                buffer.len() as c_int,
+                (buffer.len() * 2) as c_int,
             );
         }
 
-        // google recognizer works in real time only
-        // simulate the delay between buffers
-        let mut millis =
-            (buffer.len() as u64 * 1000u64) / (self.recognizer_options.sample_rate as u64);
-        millis = (millis * 900) / 1000; // wait a little less than realitme
-        sleep(Duration::from_millis(millis)).await;
+        self.samples_written += buffer.len();
 
         Ok(())
     }
