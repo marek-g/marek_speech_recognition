@@ -65,7 +65,9 @@ fn create_recognizer_factory() -> SpeechResult<Box<dyn RecognizerFactory>> {
         } else if answer == "vosk" {
             return Ok(Box::new(VoskRecognizerFactory::new(vec![VoskModelInfo {
                 language: "en-US".to_string(),
-                folder: PathBuf::from("/usr/local/share/vosk-models/small-en-us"),
+                folder: PathBuf::from(
+                    "/home/marek/Ext/Src/language/vosk_models/vosk-model-small-en-us-0.15",
+                ),
             }])?));
         }
     }
